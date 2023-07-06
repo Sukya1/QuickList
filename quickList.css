@@ -21,6 +21,7 @@ h2 {
     position: absolute;
     /* allows the nav items to extend to the entire page does not work after 995 x 717*/
     width: 95%; 
+    height: 95%;
     left: 25px;;
     top: 20px;
 }
@@ -35,4 +36,10 @@ h2 {
 }
 #list {
     font-size: x-large;
+}
+.done {
+    position: absolute;
+    bottom: 5px;
+    right: 35px;
+  
 }
