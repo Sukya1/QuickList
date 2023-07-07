@@ -43,3 +43,8 @@ h2 {
     right: 35px;
   
 }
+@media (min-width: 995px) {
+    .card img {
+      height: 11em;
+    }
+  }
