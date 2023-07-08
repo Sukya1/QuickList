@@ -1,7 +1,6 @@
 // Hash Map Initialization person -> task and person -> email and task -> asignee
 let assigneeTaskList = new Map();
 let assigneeEmailList = new Map();
-let taskMap = new Map();
 
 // Get the add button
 let addButton = document.getElementById("addButton");
@@ -9,7 +8,7 @@ let addButton = document.getElementById("addButton");
 // Get the entire form
 let list = document.querySelector("#list");
 
-//Listen for the submit button from add to be clicled and collect data and add it to the taskArray
+//Listen for the submit button for it to be clicled and collect data and add it to the hashmaps
 addButton.addEventListener("click", (data) => {
     data.preventDefault();
 
@@ -18,72 +17,89 @@ addButton.addEventListener("click", (data) => {
     let  assigneeMail = document.querySelector('input[id="assigneeMail"]').value;
     
     if (task != "" && assignee != "" && assigneeMail != "") {
-        // Add to map of person to task
-        if (assigneeTaskList.size === 0 || !assigneeTaskList.has(assignee)) {
-            assigneeTaskList.set(assignee,[task]);
-        } else {
-            assigneeTaskList.get(assignee).push(task);
-            console.log(assigneeTaskList.get(assignee));
+        //Variable to ensure task are unique
+        let change = true;
+        
+        //check that task does not already exist
+        for (let [key,value] of assigneeTaskList) {
+            for (let k = 0; k < value.length; k++) {
+                if (value[k] === task) {
+                    window.alert("Task Must be Unique! If you want to assign the same task to two people try adding each persons name to the tast");
+                    change = false;
+                    break;
+                }
+            }
         }
 
-        // Add the persons email to map of person -> email 
-        if (assigneeEmailList.size === 0 || !assigneeEmailList.has(assignee)) {
-            assigneeEmailList.set(assignee,assigneeMail);
-        }
-    // Map of task to person 
-    if (taskMap.size === 0 || !taskMap.has(task)) {
-            taskMap.set(task,assignee);
+        //If task is valid/unique add it to the list and display
+        if (change) {
+             // Add assigne to map of person => task
+            if (assigneeTaskList.size === 0 || !assigneeTaskList.has(assignee)) {
+                assigneeTaskList.set(assignee,[task]);
+            } else {
+                assigneeTaskList.get(assignee).push(task);
+                console.log(assigneeTaskList.get(assignee));
+            }
 
-            //Display the element - only want to be displayed if it is unique
+            // Add the persons email to map of person -> email 
+            if (assigneeEmailList.size === 0 || !assigneeEmailList.has(assignee)) {
+                assigneeEmailList.set(assignee,assigneeMail);
+            }
+
+            //Displays the element - only want to be displayed if it is unique
             let newItem = document.createElement("li");
             newItem.innerHTML = task;
             list.appendChild(newItem);
-        } else {
-            window.alert("Task Must be Unique! If you want to assign the same task to two people try adding each persons name to the tast");
-        }  
+        }
+
+        // Clear all the form collectTasks
+        document.getElementById("collectTasks").reset();
     } else {
+        //info should remain if all is not filled out
         window.alert("All sections of the form must be filled out in order to add a task");
     }
-    // Clear all the form collectTasks
-    document.getElementById("collectTasks").reset();
+    
 });
 
-/* Removal of a Task from the List
-You can add an event listener to the entire form and remove the target upon a click 
+/* 
+    Removal of a Task from the List, cross it out and remove after one second
 */
 
 list.addEventListener('click', (event) => {
-    console.log(assigneeEmailList);
-    // shows the element removed even thought it has not yet been removed???
-    console.log(assigneeTaskList);
-    console.log(taskMap);
-
     let currTask = event.target.innerHTML;
-    // For loop Implementation
-    // for (let i = 0; i < assigneeTaskList.size; i++) {
-    //     for (let j = 0; j < assigneeTaskList[i].length; j++) {
-    //         if (assigneeTaskList[i][j] == currTask) {
-    //             assigneeTaskList.get(i).splice(j, 1);
-    //         }
-    //     }
-    // }
-    //remove task from taskMap
-    let currentAssignee = taskMap.get(currTask);
-    taskMap.delete(currTask);
-    //remove task from hashmap and the persons name
-    let index = assigneeTaskList.get(currentAssignee).indexOf(currTask);
-    assigneeTaskList.get(currentAssignee).splice(index, 1);
-    // if their task list becomes empty remove them from the person -> email map
-    if (assigneeTaskList.get(currentAssignee).length === 0 ) {
-        assigneeTaskList.delete(currentAssignee)
-        assigneeEmailList.delete(currentAssignee);
+
+    // Implement the strike through if a a task is clicked
+    let currList = document.querySelectorAll('#list li');
+    for (let i = 0; i < currList.length; i++) {
+        if (currList[i] != undefined && currList[i].innerHTML === currTask) {
+            currList[i].innerHTML = currList[i].innerHTML.strike();
+            break;
+        }
     }
-    //Remove from screen and list
-    event.target.remove();
-  });
+    
+    // Searches and deletes clicked task, assignee is deleted if they have no task assigned to them 
+    for (let [key,value] of assigneeTaskList) {
+        for (let j = 0; j < value.length; j++) {
+            if (value[j] === currTask) {
+                assigneeTaskList.get(key).splice(j, 1);
+            }
+        }
+        if (assigneeTaskList.get(key).length === 0) {
+            assigneeTaskList.delete(key);
+            assigneeEmailList.delete(key);
+        }
+    }
+       
+    setTimeout(
+        function setTimer() {
+            event.target.remove()
+        }, 
+        1000
+    )
+    });
 
 /* 
-Functionality of Done - sent email to each asignee with all their asignened task - DOES NOT WORK!!!!
+Functionality of Done - sent email to each asignee with all their asignened task 
 */ 
 
 function sendSingleEmail(emails, tasks) {
@@ -94,19 +110,18 @@ function sendSingleEmail(emails, tasks) {
     const serviceID = "service_o1z8mqj";
     const templateID = "template_yr3uae8";
 
-    emailjs.send(serviceID,templateID, params).then(
-        res => {
-            alert("Assignee were given tasks successfully");
-        }).catch(err => console.log(err));
+    emailjs.send(serviceID,templateID, params).catch(err => console.log(err));
 }
 
 function sendEmail() {
     for (let [key,value] of assigneeTaskList) {
             sendSingleEmail(assigneeEmailList.get(key),value);
      }
+    alert("Assignee were given tasks successfully");
 }
+
 /*
-    Have the copy link button copy the address of the current website - Not sure about this
+    copy link button - copies the address of the current website to user clipboard
 */
 let copy = document.querySelector("#copy");
 const protocol = window.location.href;
@@ -117,8 +132,9 @@ copy.addEventListener('click', (event) => {
     navigator.clipboard.writeText(window.location.href);
 
 });
+
 /*
-    Have the copy link button copy the address of the current website 
+    User enters an email and invites another person to add to their list
 */
 
 function sendInvite() {

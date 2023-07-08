@@ -22,8 +22,9 @@ h2 {
     /* allows the nav items to extend to the entire page does not work after 995 x 717*/
     width: 95%; 
     height: 95%;
-    left: 25px;;
+    left: 25px;
     top: 20px;
+    right: 25px;
 }
 .navbar-brand {
     font-family: Georgia, 'Times New Roman', Times, serif;
@@ -31,9 +32,7 @@ h2 {
     font-weight: bolder;
     padding-top: 10px;
 }
-.content-bar {
-    float: right;
-}
+
 #list {
     font-size: x-large;
 }
@@ -43,8 +42,38 @@ h2 {
     right: 35px;
   
 }
-@media (min-width: 995px) {
-    .card img {
-      height: 11em;
+.share {
+    padding-bottom:10px; 
+    padding-top: 10px;
+}
+.add {
+   margin-top:8px;
+   padding-bottom: 5;
+   padding-bottom: 8px;
+}
+@media (max-width: 577px) {
+    h2 {
+        padding-top: 10px;
+        font-size: medium;
     }
-  }
+    h2 img {
+        width: 15px;
+        height: 15px;
+    }
+    .navbar-brand {
+        font-size: medium;
+    }
+    .add svg {
+        width: 20px;
+        height: 20px;
+    }
+    .add {
+        padding-bottom: 13px;
+    }
+    .share svg {
+        width: 15px;
+        height: 15px;
+        padding-bottom: 0px;
+        padding-top: 0;
+    }
+}
