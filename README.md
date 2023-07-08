@@ -10,4 +10,5 @@ A small project created using Javascript, Bootstrap, HTML, and CSS.
   3. Task entered must be unique, if not the user will be alerted
   4. Clicking the done button will result in each assignee receiving an email with a list of the task they have been assigned.
   5. The share button allows the link to the website to be copied to the user's clipboard.
-  6. The invite button sends an invitation to the website for the user to contribute to the Quick List. 
+  6. The invite button sends an invitation to the website for the user to contribute to the Quick List.
+  7. Clicking a task causes it to be crossed out and removed from the list after 1 second.
