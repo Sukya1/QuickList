@@ -54,7 +54,7 @@ h2 {
 @media (max-width: 577px) {
     h2 {
         padding-top: 10px;
-        font-size: medium;
+        font-size: large;
     }
     h2 img {
         width: 15px;
